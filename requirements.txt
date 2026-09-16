@@ -1,0 +1,10 @@
+yfinance>=0.2.40
+pandas>=2.0.0
+numpy>=1.24.0
+PyYAML>=6.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Optional: richer indicator library. AlphaSeek-M2 ships a pure-pandas
+# fallback (src/scanner.py) so this is not required.
+# pandas-ta>=0.3.14b0

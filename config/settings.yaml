@@ -1,0 +1,47 @@
+# AlphaSeek-M2 configuration
+# All thresholds are evaluated locally (zero API cost). DeepSeek is only called
+# for tickers that pass the hard technical filter.
+
+watchlist:
+  - NVDA
+  - AAPL
+  - MSFT
+  - TSLA
+  - AMZN
+  - SPY
+  - QQQ
+
+indicators:
+  ema_fast: 20
+  ema_slow: 50
+  rsi_period: 14
+  rsi_min: 45
+  rsi_max: 68
+  volume_surge_multiplier: 1.2
+  # bars of history pulled from yfinance (>= ema_slow + buffer)
+  lookback_days: 200
+  # minimum avg dollar volume (price * shares) to consider a ticker liquid
+  min_avg_dollar_volume: 20000000
+
+ai:
+  # overridden by DEEPSEEK_MODEL in .env when set
+  model: deepseek-chat        # or: deepseek-reasoner
+  base_url: https://api.deepseek.com
+  temperature: 0.2
+  max_tokens: 1200
+  timeout_seconds: 90
+  # skip the API call entirely and emit the deterministic rule-based report
+  dry_run: false
+
+notifications:
+  macos_desktop: true
+  telegram_bot_token: ""
+  telegram_chat_id: ""
+  # generic webhook (Slack / Discord / n8n ...). Leave empty to disable.
+  webhook_url: ""
+  # only notify when AI confidence >= this value
+  min_confidence: 6.0
+
+output:
+  log_dir: logs
+  save_json_report: true
