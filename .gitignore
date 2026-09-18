@@ -19,3 +19,4 @@ state/
 
 # macOS
 .DS_Store
+logs/backtest/
