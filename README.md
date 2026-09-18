@@ -30,6 +30,7 @@ A 7-ticker daily scan finishes in **under 2 seconds** on an M2 Air, with **zero*
 - 🔔 **Native macOS Integration**: Direct push notifications via native AppleScript (`display notification`).
 - ⏰ **Automated Scheduling**: Ready-to-use macOS `launchd` / `cron` configurations for pre-market and market-close execution.
 - 🧾 **Auditable**: Every run appends to `logs/alphaseek.log` and writes a machine-readable `logs/reports/YYYY-MM-DD.json`.
+- 🔬 **Backtested**: `backtest.py` replays the identical rules walk-forward (no lookahead) and reports win rate, expectancy in R, profit factor, max drawdown and a buy & hold benchmark.
 
 ---
 
@@ -45,14 +46,16 @@ alphaseek-m2/
 │   ├── config.py           # YAML + .env resolution, dotted-path access
 │   ├── scanner.py          # Data fetcher & technical indicator engine
 │   ├── ai_advisor.py       # DeepSeek API integration & prompt engine
+│   ├── backtest.py         # Walk-forward replay engine (shared with main.py rules)
 │   └── notifier.py         # macOS notification & webhook dispatcher
 ├── deploy/
 │   ├── com.alphaseek.m2.scan.plist   # launchd job template (weekdays 16:15)
 │   └── install_launchd.sh            # one-command install/uninstall
 ├── tests/                  # Offline rule-engine tests (pytest)
 ├── examples/               # Sample scan output
-├── logs/                   # Execution logs + JSON reports
+├── logs/                   # Execution logs + JSON reports (+ backtest/ artifacts)
 ├── main.py                 # Entry point
+├── backtest.py             # Walk-forward backtest CLI
 ├── requirements.txt        # Python dependencies
 └── README.md               # Project documentation
 ```
@@ -165,6 +168,56 @@ Run the test suite offline (no network, no API key):
 pip install pytest
 pytest -q
 ```
+
+---
+
+## 🔬 Walk-Forward Backtest
+
+The screen is only worth trading if the rules have a measurable edge, so the
+repo ships a **no-lookahead** replay of the exact production filter
+(`backtest.py` + `src/backtest.py`).
+
+```bash
+python backtest.py                            # 5y, config watchlist
+python backtest.py --period 3y
+python backtest.py --tickers NVDA AMD --reward-ratio 2 --stop-atr 2
+python backtest.py --max-hold 10 --json
+```
+
+**Methodology**
+
+- Every bar is evaluated through the *same* `TechnicalScanner.evaluate()` on a
+  **truncated frame**, so backtest and live rules can never drift apart.
+- Bar *i* is evaluated with data up to and including bar *i*; the trade fills at
+  the **open of bar i+1**. Indicators, ATR and the 20-day volume baseline are
+  therefore never contaminated by future bars.
+- Levels mirror the production fallback plan: stop = `1.5 × ATR14`, target =
+  `3 × risk` (3:1), max hold 10 bars, **one position per ticker at a time**
+  (no pyramiding, no overlapping entries).
+- Gaps through a level fill at the open; if a bar touches stop *and* target,
+  the stop is assumed first (conservative). Bars with no touch exit at the
+  close of the hold window (timeout).
+- Equity/DD use a **1% risk-per-trade compounding model**, applied sequentially
+  in exit order — a portfolio approximation that ignores simultaneous positions.
+
+**Results (2022-01 → 2026-09, default watchlist, 248 trades)**
+
+| Variant | Trades | Win% | Expectancy | PF | MaxDD |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1.5×ATR / 3:1 (default) | 248 | 42.3% | +0.18R | 1.34 | 20.3% |
+| 1.5×ATR / 2:1 | 253 | 43.1% | +0.13R | 1.26 | 19.4% |
+| 2.0×ATR / 2:1 | 239 | 46.0% | +0.15R | 1.35 | 17.9% |
+| 1.5×ATR / 3:1, hold 20 | 211 | 39.8% | +0.17R | 1.28 | 22.1% |
+
+Per-ticker 5y (default params): NVDA +10.1R, SPY +10.4R, QQQ +8.4R, AAPL +7.4R,
+AMZN +7.2R, MSFT +2.4R, **TSLA −1.9R**.
+
+**Honest read:** the filter does have a small, parameter-stable positive
+edge (~+0.13 to +0.20R per trade, PF 1.3), but over the same window the
+equal-weight watchlist buy & hold returned **+151%** while the strategy's 1%
+risk model compounded to roughly **+44%** with a 20% drawdown. It is a
+low-exposure signal generator, not a buy-and-hold replacement — and a 42% win
+rate means long losing streaks are normal. Backtest ≠ future performance.
 
 ---
 
