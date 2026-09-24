@@ -37,6 +37,12 @@ watchlist:
   - 000725.SZ   # 京东方A   avgR +0.22 (5y +0.20/29, 3y +0.24/23)
   - 002475.SZ   # 立讯精密  avgR +0.20 (5y +0.05/30, 3y +0.35/17), 10y +805%
   - 002415.SZ   # 海康威视  avgR +0.10 (5y +0.14/31, 3y +0.07/20), 10y +159%
+  # --- Shenzhen / Shanghai listed ETFs (added on request) ---
+  - 159995.SZ   # 芯片ETF(华夏国证半导体芯片) avgR +0.40 (5y +0.40/21, 3y +0.57/15) ✅ passes the rule
+  - 159605.SZ   # 中概互联ETF(广发中证海外中国互联网30, QDII) avgR +0.09 (5y +0.09/21, 3y +0.27/13)
+                #   ⚠️ weaker: 5y expectancy is thin and the 3y window only has 13 trades
+  - 512930.SS   # AI人工智能ETF(平安中证人工智能主题) 5y -0.13/19, 3y -0.13/19
+                #   ⚠️ negative in BOTH windows - included on request only, not by the rule
 
 indicators:
   ema_fast: 20

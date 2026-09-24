@@ -257,6 +257,9 @@ filter — and the two filters genuinely disagree:
 | 000725.SZ | 京东方A | — | 29 / +0.20 | 23 / +0.24 | ✅ included |
 | 002475.SZ | 立讯精密 | +805% | 30 / +0.05 | 17 / +0.35 | ✅ included |
 | 002415.SZ | 海康威视 | +159% | 31 / +0.14 | 20 / +0.07 | ✅ included |
+| 159995.SZ | 芯片ETF(华夏国证半导体芯片) | — | 21 / +0.40 | 15 / +0.57 | ✅ included (passes the rule) |
+| 159605.SZ | 中概互联ETF(广发, QDII) | — | 21 / +0.09 | 13 / +0.27 | ⚠️ added on request — thin 5y, 13-trade 3y |
+| 512930.SS | AI人工智能ETF(平安中证人工智能主题) | — | 19 / **−0.13** | 19 / **−0.13** | ⚠️ added on request — negative in both windows |
 | 300750.SZ | 宁德时代 | **+1495%** | 35 / **−0.23** | 25 / **−0.25** | ❌ excluded |
 | 600519.SS | 贵州茅台 | +429% | 29 / **−0.28** | 18 / **−0.29** | ❌ excluded |
 | 300760.SZ | 迈瑞医疗 | +148% | 24 / −0.49 | 14 / −0.55 | ❌ excluded |
