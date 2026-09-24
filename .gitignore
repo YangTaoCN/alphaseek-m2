@@ -20,3 +20,4 @@ state/
 # macOS
 .DS_Store
 logs/backtest/
+logs/china/reports/

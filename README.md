@@ -221,6 +221,57 @@ rate means long losing streaks are normal. Backtest ≠ future performance.
 
 ---
 
+## 🇨🇳 China Profile (A-shares / HK / US-listed China)
+
+The same engine runs a second, independent watchlist:
+
+```bash
+python main.py --config config/settings.china.yaml --dry-run --no-notify
+```
+
+Reports and logs go to `logs/china/` so they never overwrite the US ones.
+
+**Selection used the identical rule** (positive expectancy in both the 5y and
+3y walk-forward windows, ≥15 trades each). Growth was a *second, independent*
+filter — and the two filters genuinely disagree:
+
+| Ticker | Name | 10y growth | 5y n / R | 3y n / R | Outcome |
+| --- | --- | ---: | --- | --- | --- |
+| 601899.SS | 紫金矿业 | +1066% | 38 / +0.41 | 23 / +0.78 | ✅ included |
+| 601288.SS | 农业银行 | +270% | 49 / +0.44 | 26 / +0.61 | ✅ included |
+| 600309.SS | 万华化学 | +469% | 28 / +0.28 | 18 / +0.27 | ✅ included |
+| 000333.SZ | 美的集团 | +352% | 38 / +0.15 | 28 / +0.31 | ✅ included |
+| 002475.SZ | 立讯精密 | +805% | 30 / +0.05 | 17 / +0.35 | ✅ included |
+| 600036.SS | 招商银行 | +237% | 26 / +0.02 | 20 / +0.33 | ✅ included |
+| 600276.SS | 恒瑞医药 | +184% | 34 / +0.21 | 20 / +0.14 | ✅ included |
+| 002415.SZ | 海康威视 | +159% | 31 / +0.14 | 20 / +0.07 | ✅ included |
+| 1810.HK | 小米集团-W | +58% | 31 / +0.49 | 18 / +0.61 | ✅ included |
+| 2318.HK | 中国平安 | +100% | 32 / +0.12 | 24 / +0.14 | ✅ included |
+| NTES | 网易 | +193% | 41 / +0.13 | 25 / +0.33 | ✅ included |
+| MCHI | 中国大盘ETF | +32% | 29 / +0.21 | 23 / +0.27 | ✅ included |
+| FXI | 富时中国ETF | +16% | 32 / +0.23 | 25 / +0.27 | ✅ included |
+| 300750.SZ | 宁德时代 | **+1495%** | 35 / **−0.23** | 25 / **−0.25** | ❌ excluded |
+| 600519.SS | 贵州茅台 | +429% | 29 / **−0.28** | 18 / **−0.29** | ❌ excluded |
+| 300760.SZ | 迈瑞医疗 | +148% | 24 / −0.49 | 14 / −0.55 | ❌ excluded |
+| 601012.SS | 隆基绿能 | +191% | 12 / +0.54 | 10 / +0.52 | ⚠️ too few trades |
+| KWEB / CQQQ / ASHR / GXC | China ETFs | −25% / +22% / +56% / +37% | — | — | ❌ excluded |
+
+**The lesson this table teaches:** the strongest 10-year compounder on the
+board (CATL, +1495%) is *negative* in both windows, because a momentum
+breakout screen wants steady participation, not one big multi-year trend.
+Growth ranking and strategy edge must be tested separately.
+
+**Execution caveats specific to this market**
+
+- A-shares have +/-10% daily price limits and a midday break; HK has no limit.
+  Stops may be gapped through more often than on US names.
+- yfinance prices are in local currency (CNY / HKD) and are not adjusted for
+  the CNY/USD move — treat the R-multiples as local-currency results.
+- Bar "volume" comparison still works (relative to each name's own 20-day
+  average), which is why the same thresholds transfer.
+
+---
+
 ## 🎯 Watchlist Selection (backtest-driven)
 
 Every symbol in `config/settings.yaml` must clear a two-window test on the

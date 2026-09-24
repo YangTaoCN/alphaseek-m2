@@ -1,0 +1,67 @@
+# AlphaSeek-M2 - China market profile (A-shares / HK / China-exposure US listings)
+#
+# Run:  python main.py --config config/settings.china.yaml --dry-run --no-notify
+#
+# Selection rule (same as the US watchlist): positive expectancy in BOTH the
+# 5y and 3y walk-forward windows with >=15 trades in each. Long-term growth is
+# a second, independent filter - a name can grow for 10 years and still be a
+# bad fit for this momentum screen (CATL 10y +1495% is negative in BOTH
+# windows; Moutai likewise), so growth alone is never the reason to include.
+#
+# Data source note: yfinance serves these with the local exchange's price in
+# local currency and daily bars. A-share sessions have a midday break and
+# +/-10% daily limits, HK has no limit - expect wider stops on HK names.
+
+watchlist:
+  # --- A-shares (Shanghai .SS / Shenzhen .SZ) ---
+  - 601899.SS   # 紫金矿业  avgR +0.59 (5y +0.41/38, 3y +0.78/23), 10y +1066%
+  - 601288.SS   # 农业银行  avgR +0.52 (5y +0.44/49, 3y +0.61/26), 10y +270%
+  - 600309.SS   # 万华化学  avgR +0.28 (5y +0.28/28, 3y +0.27/18), 10y +469%
+  - 000333.SZ   # 美的集团  avgR +0.23 (5y +0.15/38, 3y +0.31/28), 10y +352%
+  - 002475.SZ   # 立讯精密  avgR +0.20 (5y +0.05/30, 3y +0.35/17), 10y +805%
+  - 600036.SS   # 招商银行  avgR +0.18 (5y +0.02/26, 3y +0.33/20), 10y +237%
+  - 600276.SS   # 恒瑞医药  avgR +0.17 (5y +0.21/34, 3y +0.14/20), 10y +184%
+  - 002415.SZ   # 海康威视  avgR +0.10 (5y +0.14/31, 3y +0.07/20), 10y +159%
+  # --- Hong Kong ---
+  - 1810.HK     # 小米集团-W avgR +0.55 (5y +0.49/31, 3y +0.61/18), 10y  +58%
+  - 2318.HK     # 中国平安   avgR +0.13 (5y +0.12/32, 3y +0.14/24), 10y +100%
+  # --- US-listed China exposure ---
+  - NTES        # 网易      avgR +0.23 (5y +0.13/41, 3y +0.33/25), 10y +193%
+  - MCHI        # 中国大盘ETF avgR +0.24 (5y +0.21/29, 3y +0.27/23)
+  - FXI         # 富时中国ETF avgR +0.25 (5y +0.23/32, 3y +0.27/25)
+
+# Rejected despite strong 10y growth (negative expectancy in both windows):
+# 300750.SZ CATL (+1495%), 600519.SS 贵州茅台 (+429%), 300760.SZ 迈瑞医疗,
+# 2020.HK 安踏, 0388.HK 港交所, 0981.HK 中芯国际, KWEB, CQQQ, ASHR, PDD.
+# Rejected for too few signals: 601012.SS 隆基绿能 (only 12/10 trades despite
+# +0.54R - too small a sample to trust), GXC (1 trade).
+
+indicators:
+  ema_fast: 20
+  ema_slow: 50
+  rsi_period: 14
+  rsi_min: 45
+  rsi_max: 68
+  volume_surge_multiplier: 1.2
+  lookback_days: 200
+  min_avg_dollar_volume: 20000000
+
+ai:
+  model: deepseek-chat
+  base_url: https://api.deepseek.com
+  temperature: 0.2
+  max_tokens: 1200
+  timeout_seconds: 90
+  dry_run: false
+
+notifications:
+  macos_desktop: false
+  telegram_bot_token: ""
+  telegram_chat_id: ""
+  webhook_url: ""
+  min_confidence: 6.0
+
+output:
+  # separate directory so the China reports never overwrite the US ones
+  log_dir: logs/china
+  save_json_report: true

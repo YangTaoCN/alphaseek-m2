@@ -16,6 +16,8 @@ watchlist:
   - SOXX     # best ETF on the board: +0.54R/5y, +0.43R/3y, positive all 3 windows
   - AIQ      # AI & big-data ETF: +0.56R/5y, +0.56R/3y
   - VOO
+  - SCHG     # Schwab US Large-Cap Growth: +0.41R/5y, +0.42R/3y
+  - IGV      # iShares software: +0.27R/5y, +0.32R/3y
   # mega-cap tech
   - NVDA
   - AAPL
