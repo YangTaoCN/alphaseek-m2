@@ -1,15 +1,36 @@
 # AlphaSeek-M2 configuration
 # All thresholds are evaluated locally (zero API cost). DeepSeek is only called
 # for tickers that pass the hard technical filter.
+#
+# Watchlist selection is backtest-driven: every name must show positive
+# expectancy in BOTH the 5y and 3y walk-forward windows with >=15 trades each
+# (1y is too small a sample to judge - 3-10 trades). See the
+# "Watchlist selection" section in README.md for the per-ticker numbers.
+# Dropped after testing: TSLA (-0.08R, PF 0.86), MSFT (3y negative),
+# SNPS/ADBE/QCOM/UBER/ARKK/BOTZ/SMCI (negative in both windows).
 
 watchlist:
-  - NVDA
-  - AAPL
-  - MSFT
-  - TSLA
-  - AMZN
+  # broad / sector ETFs
   - SPY
   - QQQ
+  - SOXX     # best ETF on the board: +0.54R/5y, +0.43R/3y, positive all 3 windows
+  - AIQ      # AI & big-data ETF: +0.56R/5y, +0.56R/3y
+  - VOO
+  # mega-cap tech
+  - NVDA
+  - AAPL
+  - AMZN
+  - GOOGL
+  - META     # strongest single name: +0.71R/5y, PF 3.19
+  - ORCL
+  - CRM
+  - AVGO
+  # AI infrastructure & semiconductors
+  - AMD
+  - VRT      # data-center power/cooling: +0.59R/5y, +0.54R/3y
+  - DELL     # AI servers: +0.52R/5y, +0.54R/3y
+  - KLAC     # +0.64R/5y, PF 2.87
+  - TER      # +0.49R/5y, +0.80R/3y
 
 indicators:
   ema_fast: 20

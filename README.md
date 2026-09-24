@@ -221,6 +221,56 @@ rate means long losing streaks are normal. Backtest ≠ future performance.
 
 ---
 
+## 🎯 Watchlist Selection (backtest-driven)
+
+Every symbol in `config/settings.yaml` must clear a two-window test on the
+walk-forward engine above:
+
+- **positive expectancy in BOTH the 5y and 3y window**, and
+- **≥15 closed trades in each** (so one lucky trade cannot carry it).
+
+The 1y window is reported but not required — at 10-bar holds a year only
+produces 3-10 trades, so it flips sign on a single trade and is treated as a
+tiebreaker, not a criterion.
+
+| Ticker | Group | 5y n / R / PF | 3y n / R / PF | 1y R |
+| --- | --- | --- | --- | ---: |
+| META | mega-cap tech | 29 / +0.71 / 3.19 | 20 / +0.66 / 2.86 | +0.63 |
+| KLAC | semis | 47 / +0.64 / 2.87 | 33 / +0.49 / 2.10 | +0.29 |
+| CRM | mega-cap tech | 26 / +0.60 / 3.01 | 15 / +0.37 / 1.99 | +0.62 |
+| VRT | AI infrastructure | 43 / +0.59 / 2.41 | 28 / +0.54 / 2.33 | +0.97 |
+| AIQ | AI ETF | 23 / +0.56 / 2.73 | 23 / +0.56 / 2.73 | +0.26 |
+| ORCL | mega-cap tech | 31 / +0.55 / 1.97 | 17 / +1.00 / 3.01 | −0.29 |
+| SOXX | semis ETF | 45 / +0.54 / 2.29 | 30 / +0.43 / 1.96 | +0.46 |
+| GOOGL | mega-cap tech | 36 / +0.53 / 2.26 | 24 / +0.67 / 2.50 | −0.55 |
+| DELL | AI infrastructure | 40 / +0.52 / 2.29 | 24 / +0.54 / 2.27 | +0.38 |
+| TER | semis | 30 / +0.49 / 2.17 | 24 / +0.80 / 4.06 | +1.15 |
+| AMD | mega-cap tech | 28 / +0.46 / 1.84 | 18 / +0.30 / 1.53 | +0.28 |
+| AVGO | mega-cap tech | 42 / +0.43 / 1.89 | 25 / +0.58 / 2.26 | +0.31 |
+| VOO | broad ETF | 46 / +0.41 / 1.89 | 33 / +0.55 / 2.37 | +0.13 |
+| AAPL | mega-cap tech | 28 / +0.27 / 1.51 | 19 / +0.44 / 1.87 | +0.11 |
+| NVDA | mega-cap tech | 42 / +0.25 / 1.46 | 26 / +0.09 / 1.16 | −0.37 |
+| SPY | broad ETF | 48 / +0.25 / 1.50 | 36 / +0.36 / 1.79 | −0.19 |
+| QQQ | broad ETF | 43 / +0.24 / 1.52 | 30 / +0.40 / 1.90 | −0.30 |
+| AMZN | mega-cap tech | 33 / +0.20 / 1.43 | 25 / +0.07 / 1.13 | −0.96 |
+
+**Portfolio result for this 18-name list (5y):** 660 trades, 52.7% win rate,
+**+0.449R expectancy**, profit factor **2.01**, max drawdown **20.6%**
+(vs +0.177R / PF 1.34 / 40%-ish win rate for the original 7-name list).
+
+**Tested and rejected** (negative in both 5y and 3y): TSLA (−0.08R, PF 0.86),
+MSFT (3y negative), SNPS, ADBE, QCOM, UBER, ARKK, BOTZ, SMCI, INTU, VTI.
+Candidates that passed 5y/3y but came up short on trade count or 1y behaviour
+(AMAT, MRVL, SMH, SCHG, IGV, VOO-adjacent ETFs) are held in reserve rather
+than padding the list.
+
+> Selection is in-sample by construction — a repeated pattern in this repo is
+> that 1y windows disagree with 5y windows, which is exactly why the list is
+> re-checked rather than frozen. Re-run `python backtest.py --tickers <sym>`
+> before adding anything new.
+
+---
+
 ## ⏰ macOS Automated Scheduling (launchd / cron)
 
 To run the scan automatically 15 minutes after US market close (16:15 ET on weekdays):
