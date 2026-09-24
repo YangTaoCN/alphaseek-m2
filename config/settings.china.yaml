@@ -1,40 +1,42 @@
-# AlphaSeek-M2 - China market profile (A-shares / HK / China-exposure US listings)
+# AlphaSeek-M2 - China A-share profile (Shanghai .SS / Shenzhen .SZ only)
 #
 # Run:  python main.py --config config/settings.china.yaml --dry-run --no-notify
 #
+# Scope: Shanghai/Shenzhen listings only. Hong Kong (.HK) and US-listed China
+# names (NTES / MCHI / FXI / KWEB) were tested and removed - the mandate is
+# names actually tradable on 沪市 / 深市.
+#
 # Selection rule (same as the US watchlist): positive expectancy in BOTH the
 # 5y and 3y walk-forward windows with >=15 trades in each. Long-term growth is
-# a second, independent filter - a name can grow for 10 years and still be a
-# bad fit for this momentum screen (CATL 10y +1495% is negative in BOTH
-# windows; Moutai likewise), so growth alone is never the reason to include.
+# a second, independent filter - several of the biggest 10-year compounders
+# fail the screen outright (CATL +1495% and Moutai +429% are negative in BOTH
+# windows), so growth alone is never a reason to include.
 #
-# Data source note: yfinance serves these with the local exchange's price in
-# local currency and daily bars. A-share sessions have a midday break and
-# +/-10% daily limits, HK has no limit - expect wider stops on HK names.
+# Removed for scope: 1810.HK 小米, 2318.HK 中国平安(H), NTES, MCHI, FXI.
+# Tested and rejected (negative in both windows): 宁德时代, 贵州茅台, 迈瑞医疗,
+# 伊利股份, 格力电器, 海螺水泥, 兴业银行, 海尔智家, 韦尔股份, 中国石化(3y -),
+# 中国神华(3y -), 长江电力(3y ~0), 五粮液(3y -).
 
 watchlist:
-  # --- A-shares (Shanghai .SS / Shenzhen .SZ) ---
+  # --- Shanghai (.SS) ---
   - 601899.SS   # 紫金矿业  avgR +0.59 (5y +0.41/38, 3y +0.78/23), 10y +1066%
   - 601288.SS   # 农业银行  avgR +0.52 (5y +0.44/49, 3y +0.61/26), 10y +270%
+  - 601398.SS   # 工商银行  avgR +0.30 (5y +0.28/54, 3y +0.32/36), 10y +124%
+  - 601318.SS   # 中国平安  avgR +0.33 (5y +0.25/30, 3y +0.41/20), 10y +128%
+  - 688008.SS   # 澜起科技  avgR +0.39 (5y +0.33/31, 3y +0.44/23), 10y +201%
+  - 688981.SS   # 中芯国际  avgR +0.25 (5y +0.22/32, 3y +0.27/21), 10y  +45%
   - 600309.SS   # 万华化学  avgR +0.28 (5y +0.28/28, 3y +0.27/18), 10y +469%
-  - 000333.SZ   # 美的集团  avgR +0.23 (5y +0.15/38, 3y +0.31/28), 10y +352%
-  - 002475.SZ   # 立讯精密  avgR +0.20 (5y +0.05/30, 3y +0.35/17), 10y +805%
+  - 600030.SS   # 中信证券  avgR +0.23 (5y +0.26/31, 3y +0.20/18), 10y +116%
   - 600036.SS   # 招商银行  avgR +0.18 (5y +0.02/26, 3y +0.33/20), 10y +237%
   - 600276.SS   # 恒瑞医药  avgR +0.17 (5y +0.21/34, 3y +0.14/20), 10y +184%
+  - 601138.SS   # 工业富联  avgR +0.16 (5y +0.14/35, 3y +0.18/17), 10y +531%
+  # --- Shenzhen (.SZ) ---
+  - 300308.SZ   # 中际旭创  avgR +0.34 (5y +0.33/31, 3y +0.34/21)
+  - 002230.SZ   # 科大讯飞  avgR +0.71 (5y +0.72/21, 3y +0.69/15)
+  - 000333.SZ   # 美的集团  avgR +0.23 (5y +0.15/38, 3y +0.31/28), 10y +352%
+  - 000725.SZ   # 京东方A   avgR +0.22 (5y +0.20/29, 3y +0.24/23)
+  - 002475.SZ   # 立讯精密  avgR +0.20 (5y +0.05/30, 3y +0.35/17), 10y +805%
   - 002415.SZ   # 海康威视  avgR +0.10 (5y +0.14/31, 3y +0.07/20), 10y +159%
-  # --- Hong Kong ---
-  - 1810.HK     # 小米集团-W avgR +0.55 (5y +0.49/31, 3y +0.61/18), 10y  +58%
-  - 2318.HK     # 中国平安   avgR +0.13 (5y +0.12/32, 3y +0.14/24), 10y +100%
-  # --- US-listed China exposure ---
-  - NTES        # 网易      avgR +0.23 (5y +0.13/41, 3y +0.33/25), 10y +193%
-  - MCHI        # 中国大盘ETF avgR +0.24 (5y +0.21/29, 3y +0.27/23)
-  - FXI         # 富时中国ETF avgR +0.25 (5y +0.23/32, 3y +0.27/25)
-
-# Rejected despite strong 10y growth (negative expectancy in both windows):
-# 300750.SZ CATL (+1495%), 600519.SS 贵州茅台 (+429%), 300760.SZ 迈瑞医疗,
-# 2020.HK 安踏, 0388.HK 港交所, 0981.HK 中芯国际, KWEB, CQQQ, ASHR, PDD.
-# Rejected for too few signals: 601012.SS 隆基绿能 (only 12/10 trades despite
-# +0.54R - too small a sample to trust), GXC (1 trade).
 
 indicators:
   ema_fast: 20
@@ -44,6 +46,7 @@ indicators:
   rsi_max: 68
   volume_surge_multiplier: 1.2
   lookback_days: 200
+  # A-share turnover is quoted in CNY, so this floor is ~CNY 20M not USD 20M
   min_avg_dollar_volume: 20000000
 
 ai:
